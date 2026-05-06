@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(npx shadcn@latest init --defaults 2>&1)",
+      "PowerShell(winget install *)",
+      "PowerShell(gh *)",
+      "PowerShell(git *)"
+    ]
+  }
+}
