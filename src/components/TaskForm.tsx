@@ -57,8 +57,8 @@ export function TaskForm({ open, onClose, onSubmit, initial, defaultStatus }: Pr
     }
   }, [initial, defaultStatus, open])
 
-  const set = (field: string, value: string) =>
-    setForm((prev) => ({ ...prev, [field]: value }))
+  const set = (field: string, value: string | null) =>
+    setForm((prev) => ({ ...prev, [field]: value ?? '' }))
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
