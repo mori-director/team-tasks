@@ -1,37 +1,60 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { readTasks, writeTasks } from '@/lib/data'
+import { createClient } from '@/lib/supabase/server'
+import type { TablesUpdate } from '@/lib/database.types'
 
-export async function PUT(
-  req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+type Params = { params: Promise<{ id: string }> }
+
+export async function GET(_req: NextRequest, { params }: Params) {
   const { id } = await params
-  const body = await req.json()
-  const tasks = readTasks()
-  const index = tasks.findIndex((t) => t.id === id)
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 })
 
-  if (index === -1) {
-    return NextResponse.json({ error: 'Task not found' }, { status: 404 })
-  }
+  const { data, error } = await supabase
+    .from('tasks')
+    .select('*')
+    .eq('id', id)
+    .single()
 
-  tasks[index] = { ...tasks[index], ...body, id, updatedAt: new Date().toISOString() }
-  writeTasks(tasks)
-
-  return NextResponse.json(tasks[index])
+  if (error) return NextResponse.json({ error: error.message }, { status: 404 })
+  return NextResponse.json(data)
 }
 
-export async function DELETE(
-  _req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function PATCH(req: NextRequest, { params }: Params) {
   const { id } = await params
-  const tasks = readTasks()
-  const filtered = tasks.filter((t) => t.id !== id)
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 })
 
-  if (filtered.length === tasks.length) {
-    return NextResponse.json({ error: 'Task not found' }, { status: 404 })
+  const body = await req.json()
+  const allowed = ['title', 'assignee_id', 'status'] as const
+  const patch: TablesUpdate<'tasks'> = {}
+  for (const key of allowed) {
+    if (key in body) patch[key] = body[key]
   }
 
-  writeTasks(filtered)
-  return NextResponse.json({ success: true })
+  const { data, error } = await supabase
+    .from('tasks')
+    .update(patch)
+    .eq('id', id)
+    .select()
+    .single()
+
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  return NextResponse.json(data)
+}
+
+export async function DELETE(_req: NextRequest, { params }: Params) {
+  const { id } = await params
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 })
+
+  const { error } = await supabase
+    .from('tasks')
+    .delete()
+    .eq('id', id)
+
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  return new NextResponse(null, { status: 204 })
 }

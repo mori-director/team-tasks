@@ -1,32 +1,37 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { readTasks, writeTasks } from '@/lib/data'
-import { Task } from '@/lib/types'
-import { randomUUID } from 'crypto'
+import { createClient } from '@/lib/supabase/server'
 
 export async function GET() {
-  const tasks = readTasks()
-  return NextResponse.json(tasks)
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 })
+
+  const { data, error } = await supabase
+    .from('tasks')
+    .select('*')
+    .order('created_at', { ascending: false })
+
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  return NextResponse.json(data)
 }
 
 export async function POST(req: NextRequest) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 })
+
   const body = await req.json()
-  const tasks = readTasks()
+  const { data, error } = await supabase
+    .from('tasks')
+    .insert({
+      title: body.title,
+      assignee_id: body.assignee_id ?? user.id,
+      status: body.status ?? 'todo',
+      created_by: user.id,
+    })
+    .select()
+    .single()
 
-  const now = new Date().toISOString()
-  const task: Task = {
-    id: randomUUID(),
-    title: body.title,
-    description: body.description ?? '',
-    status: body.status ?? 'todo',
-    priority: body.priority ?? 'medium',
-    assignee: body.assignee ?? '',
-    dueDate: body.dueDate ?? '',
-    createdAt: now,
-    updatedAt: now,
-  }
-
-  tasks.push(task)
-  writeTasks(tasks)
-
-  return NextResponse.json(task, { status: 201 })
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  return NextResponse.json(data, { status: 201 })
 }
