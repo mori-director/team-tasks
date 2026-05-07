@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { buildTaskRecord } from './build-record'
 
 export async function GET() {
   const supabase = await createClient()
@@ -23,12 +24,7 @@ export async function POST(req: NextRequest) {
   const body = await req.json()
   const { data, error } = await supabase
     .from('tasks')
-    .insert({
-      title: body.title,
-      assignee_id: body.assignee_id ?? user.id,
-      status: body.status ?? 'todo',
-      created_by: user.id,
-    })
+    .insert(buildTaskRecord(body, user))
     .select()
     .single()
 
