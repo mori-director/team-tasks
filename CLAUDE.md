@@ -18,9 +18,10 @@
 - 상세는 docs/api.md 참조.
 
 ### DB 규칙
-- 테이블은 `tasks` 단 하나, 컬럼 6개: `id · title · assignee_id · created_by · status · created_at`
+- 테이블: `tasks`(일감), `comments`(댓글) — 각 컬럼 정의는 docs/db.md 참조
 - `status` 는 `text check (status in ('todo', 'done'))` — ENUM 타입 사용 금지
-- 인덱스·트리거·RLS·comments 추가 금지 (RLS는 OAuth 단계에서 별도 적용)
+- 인덱스·트리거·SQL 인라인 주석 추가 금지
+- RLS는 auth.uid() 기반으로 테이블마다 적용
 - 상세는 docs/db.md 참조.
 
 ### 기능 범위 (MVP 5개)
@@ -40,3 +41,4 @@
 | 작성자 | 일감을 생성한 사람 (삭제 권한 보유) | `created_by` |
 | 상태 | 일감의 진행 단계 (`todo` \| `done`) | `status` |
 | 칸반 보드 | 상태별 컬럼(할 일·진행 중·완료)으로 일감을 시각화한 화면 | — |
+| 댓글 | 일감에 달리는 텍스트 메모 | `comments` 테이블 |
