@@ -47,7 +47,18 @@
       "Bash(git rm *)",
       "Skill(scaffold-crud)",
       "PowerShell(Start-Process \"C:\\\\Users\\\\User\\\\team-tasks\\\\.claude\\\\skills\\\\docs-workflow-workspace\\\\review.html\")",
-      "Skill(git-commit)"
+      "Skill(git-commit)",
+      "Bash(npm i *)",
+      "Bash(npx vitest *)",
+      "Bash(node --env-file=.env.local -e 'import\\('\\\\''@supabase/supabase-js'\\\\''\\).then\\(async \\({createClient}\\) => { *)",
+      "PowerShell(Get-Content C:\\\\Users\\\\User\\\\team-tasks\\\\.env.local | ForEach-Object { if \\($_ -match '^\\([^=]+\\)='\\) { $matches[1] + '=[있음]' } })",
+      "Bash(node *)",
+      "PowerShell(cd C:\\\\Users\\\\User\\\\team-tasks; Get-ChildItem -Name | Where-Object { $_ -match 'play|test' })",
+      "Skill(schedule)",
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\User\\\\team-tasks\" -Recurse -Force)",
+      "Bash(Select-Object -First 100)",
+      "Bash(Format-Table -AutoSize)",
+      "Bash(grep -E \"\\\\.\\(sql|ts|tsx\\)$\")"
     ]
   }
 }
