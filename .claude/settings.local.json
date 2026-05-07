@@ -43,7 +43,11 @@
       "Bash(Get-ChildItem -Recurse \"data\")",
       "Bash(Get-ChildItem -Recurse \"src/app/api/comments\")",
       "Bash(Get-ChildItem -Recurse \"src/app/comments\")",
-      "Bash(Get-ChildItem \"supabase/migrations\")"
+      "Bash(Get-ChildItem \"supabase/migrations\")",
+      "Bash(git rm *)",
+      "Skill(scaffold-crud)",
+      "PowerShell(Start-Process \"C:\\\\Users\\\\User\\\\team-tasks\\\\.claude\\\\skills\\\\docs-workflow-workspace\\\\review.html\")",
+      "Skill(git-commit)"
     ]
   }
 }
